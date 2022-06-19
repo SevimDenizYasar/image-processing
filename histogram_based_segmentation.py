@@ -10,6 +10,7 @@ from skimage import img_as_ubyte, img_as_float, io
 from skimage.restoration import denoise_nl_means, estimate_sigma
 import numpy as np
 from matplotlib import pyplot as plt
+from scipy import ndimage as nd
 
 img = img_as_float(cv2.imread("./input_images/BSE_Google_noisy.jpg", cv2.IMREAD_GRAYSCALE))
 #print(len(img.shape))
@@ -35,5 +36,34 @@ all_segments[segm2] = (0,1,0)
 all_segments[segm3] = (0,0,1)
 all_segments[segm4] = (1,1,0)
 
-plt.imshow(all_segments)
+#plt.imshow(all_segments)
+
+#BINARY CLOSING/OPENING 
+
+segm1_opened = nd.binary_opening(segm1, np.ones((3,3)))
+segm1_closed = nd.binary_closing(segm1_opened, np.ones((3,3)))
+
+segm2_opened = nd.binary_opening(segm2, np.ones((3,3)))
+segm2_closed = nd.binary_closing(segm2_opened, np.ones((3,3)))
+
+
+segm3_opened = nd.binary_opening(segm3, np.ones((3,3)))
+segm3_closed = nd.binary_closing(segm3_opened, np.ones((3,3)))
+
+
+segm4_opened = nd.binary_opening(segm4, np.ones((3,3)))
+segm4_closed = nd.binary_closing(segm4_opened, np.ones((3,3)))
+
+all_segments_cleaned = np.zeros((denoise_ubyte.shape[0], denoise_ubyte.shape[1],3))
+
+all_segments_cleaned[segm1_closed] = (1,0,0)
+all_segments_cleaned[segm2_closed] = (0,1,0)
+all_segments_cleaned[segm3_closed] = (0,0,1)
+all_segments_cleaned[segm4_closed] = (1,1,0)
+
+
+
+plt.imsave("./output_images/segmented.jpg",all_segments_cleaned)
+
+
 
